@@ -1,0 +1,354 @@
+# Restaurant Management System
+
+A comprehensive full-stack backend REST API for managing restaurant operations including orders, tables, reservations, inventory, payments, and analytics.
+
+## 🚀 Features
+
+- **Menu Management**: Full CRUD operations for menu items with categories
+- **Table Management**: Track table availability and capacity
+- **Reservations**: Book, manage, and track table reservations
+- **Order Processing**: Create orders, add/remove items, track status
+- **Payment Processing**: Multiple payment methods with transaction tracking
+- **Inventory Management**: Track stock levels with low-stock alerts
+- **Reports & Analytics**: Daily sales, popular items, reservation summaries
+- **Admin Dashboard**: Django admin interface for all operations
+- **API Documentation**: Interactive Swagger/ReDoc documentation
+
+## 🛠️ Tech Stack
+
+- **Framework**: Django 4.2.7
+- **API**: Django REST Framework 3.14.0
+- **Database**: PostgreSQL (or SQLite for development)
+- **Documentation**: drf-yasg (Swagger/OpenAPI)
+- **CORS**: django-cors-headers
+
+## 📋 Prerequisites
+
+- Python 3.8+
+- PostgreSQL (or SQLite for development)
+- pip
+
+## ⚙️ Installation & Setup
+
+### 1. Clone the repository
+
+```bash
+git clone <repository-url>
+cd restaurant_system
+```
+
+### 2. Create virtual environment
+
+```bash
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Database
+
+**For PostgreSQL:**
+```python
+# settings.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'restaurant_db',
+        'USER': 'your_username',
+        'PASSWORD': 'your_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+```
+
+**For SQLite (Development):**
+```python
+# Already configured by default
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+```
+
+### 5. Run Migrations
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### 6. Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+### 7. Seed Database (Optional)
+
+```bash
+python manage.py seed
+```
+
+This will populate the database with:
+- 20 menu items (appetizers, mains, desserts, beverages)
+- 10 tables with varying capacities
+- 10 inventory items
+
+### 8. Run Development Server
+
+```bash
+python manage.py runserver
+```
+
+The API will be available at `http://localhost:8000/api/`
+
+## 📚 API Documentation
+
+Once the server is running, access the interactive API documentation:
+
+- **Swagger UI**: http://localhost:8000/swagger/
+- **ReDoc**: http://localhost:8000/redoc/
+- **Admin Panel**: http://localhost:8000/admin/
+
+## 🔗 API Endpoints
+
+### Menu Items
+- `GET /api/menu/` - List all menu items
+- `POST /api/menu/` - Create menu item
+- `GET /api/menu/{id}/` - Retrieve menu item
+- `PUT /api/menu/{id}/` - Update menu item
+- `DELETE /api/menu/{id}/` - Delete menu item
+- `GET /api/menu/available/` - Get available items
+- `GET /api/menu/categories/` - Get all categories
+
+### Tables
+- `GET /api/tables/` - List all tables
+- `POST /api/tables/` - Create table
+- `GET /api/tables/available/` - Get available tables
+- `GET /api/tables/by_capacity/?min_capacity=4` - Filter by capacity
+- `POST /api/tables/{id}/mark_available/` - Mark table as available
+- `POST /api/tables/{id}/mark_unavailable/` - Mark table as unavailable
+
+### Reservations
+- `GET /api/reservations/` - List all reservations
+- `POST /api/reservations/` - Create reservation
+- `GET /api/reservations/{id}/` - Retrieve reservation
+- `PATCH /api/reservations/{id}/` - Update reservation
+- `DELETE /api/reservations/{id}/` - Delete reservation
+- `POST /api/reservations/{id}/cancel/` - Cancel reservation
+- `POST /api/reservations/{id}/complete/` - Complete reservation
+- `GET /api/reservations/today/` - Get today's reservations
+- `GET /api/reservations/upcoming/` - Get upcoming reservations
+
+### Orders
+- `GET /api/orders/` - List all orders
+- `POST /api/orders/` - Create order
+- `GET /api/orders/{id}/` - Retrieve order
+- `PATCH /api/orders/{id}/update_status/` - Update order status
+- `POST /api/orders/{id}/add_item/` - Add item to order
+- `DELETE /api/orders/{id}/remove_item/` - Remove item from order
+- `GET /api/orders/active/` - Get active orders
+- `GET /api/orders/today/` - Get today's orders
+
+### Payments
+- `GET /api/payments/` - List all payments
+- `POST /api/payments/` - Create payment
+- `GET /api/payments/{id}/` - Retrieve payment
+- `POST /api/payments/{id}/complete_payment/` - Complete payment
+- `POST /api/payments/{id}/refund/` - Refund payment
+- `GET /api/payments/today/` - Get today's payments
+- `GET /api/payments/summary/` - Payment summary by method
+
+### Inventory
+- `GET /api/inventory/` - List all inventory items
+- `POST /api/inventory/` - Create inventory item
+- `GET /api/inventory/{id}/` - Retrieve inventory item
+- `PATCH /api/inventory/{id}/update_quantity/` - Update quantity
+- `POST /api/inventory/{id}/restock/` - Restock item
+- `GET /api/inventory/low_stock/` - Get low stock items
+
+### Reports
+- `GET /api/reports/daily_sales/?date=2024-01-15` - Daily sales report
+- `GET /api/reports/inventory_alerts/` - Inventory alerts
+- `GET /api/reports/reservation_summary/?start_date=2024-01-01&end_date=2024-01-31` - Reservation summary
+- `GET /api/reports/popular_items/?date=2024-01-15` - Popular items
+
+## 💳 Payment Methods Supported
+
+- **CASH** - Cash payment
+- **CARD** - Credit/Debit Card
+- **DIGITAL** - Digital Wallet (PayPal, Venmo, etc.)
+- **UPI** - Unified Payments Interface
+- **BANK_TRANSFER** - Bank Transfer
+
+## 📊 Payment Flow
+
+1. Create an order with items
+2. Order calculates total automatically
+3. Create payment with order reference
+4. Payment calculates tax (8%) and final amount
+5. Complete payment with transaction ID
+6. Order status updates to SERVED
+7. Table becomes available
+
+## 🔄 Order Workflow
+
+1. **Create Order**: POST to `/api/orders/` with table and items
+2. **Add Items**: POST to `/api/orders/{id}/add_item/`
+3. **Update Status**: PATCH to `/api/orders/{id}/update_status/`
+4. **Process Payment**: POST to `/api/payments/`
+5. **Complete**: Payment completion marks order as SERVED and frees table
+
+## 📝 Example API Calls
+
+### Create an Order
+
+```bash
+POST /api/orders/
+{
+  "table": 1,
+  "customer_name": "John Doe",
+  "notes": "No onions",
+  "items": [
+    {
+      "menu_item_id": 5,
+      "quantity": 2,
+      "special_instructions": "Well done"
+    },
+    {
+      "menu_item_id": 11,
+      "quantity": 1
+    }
+  ]
+}
+```
+
+### Create Payment
+
+```bash
+POST /api/payments/
+{
+  "order": 1,
+  "payment_method": "CARD",
+  "tip_amount": "5.00",
+  "discount_amount": "0.00",
+  "notes": "Paid with Visa"
+}
+```
+
+### Complete Payment
+
+```bash
+POST /api/payments/1/complete_payment/
+{
+  "transaction_id": "TXN123456789"
+}
+```
+
+### Make Reservation
+
+```bash
+POST /api/reservations/
+{
+  "customer_name": "Jane Smith",
+  "customer_phone": "+1234567890",
+  "customer_email": "jane@example.com",
+  "table": 3,
+  "date": "2024-01-20",
+  "time": "19:00:00",
+  "party_size": 4,
+  "special_requests": "Window seat preferred"
+}
+```
+
+## 🧪 Testing
+
+The system includes comprehensive validation:
+- Order items must reference available menu items
+- Table capacity must accommodate party size
+- Payment amount must match order total
+- Inventory updates when orders are processed
+- Prevents double-booking of tables
+
+## 🔐 Security Features
+
+- CORS configuration for frontend integration
+- Input validation on all endpoints
+- Transaction integrity for payments
+- Status-based workflow enforcement
+
+## 📂 Project Structure
+
+```
+restaurant_system/
+│
+├── restaurant/
+│   ├── models.py              # Database models
+│   ├── serializers.py         # DRF serializers
+│   ├── views.py               # API views and viewsets
+│   ├── urls.py                # URL routing
+│   ├── admin.py               # Admin configuration
+│   └── management/
+│       └── commands/
+│           └── seed.py        # Seed data command
+│
+├── restaurant_system/
+│   ├── settings.py            # Project settings
+│   ├── urls.py                # Main URL configuration
+│   └── wsgi.py
+│
+├── requirements.txt           # Python dependencies
+└── README.md                  # This file
+```
+
+## 🚀 Deployment
+
+For production deployment:
+
+1. Set `DEBUG = False` in settings.py
+2. Configure allowed hosts
+3. Use environment variables for sensitive data
+4. Set up PostgreSQL database
+5. Configure static files serving
+6. Use gunicorn/uwsgi for production server
+7. Set up nginx as reverse proxy
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 👥 Support
+
+For support, email support@restaurant.com or open an issue in the repository.
+
+## 🎯 Future Enhancements
+
+- [ ] JWT Authentication for staff/admin users
+- [ ] Email/SMS notifications for reservations
+- [ ] WebSocket for live order updates
+- [ ] QR code menu generation
+- [ ] Multi-location support
+- [ ] Customer loyalty program
+- [ ] Kitchen display system integration
+- [ ] Advanced reporting and analytics dashboard

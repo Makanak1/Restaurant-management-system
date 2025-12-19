@@ -177,7 +177,7 @@ Once the server is running, access the interactive API documentation:
 - `POST /api/inventory/` - Create inventory item
 - `GET /api/inventory/{id}/` - Retrieve inventory item
 - `PATCH /api/inventory/{id}/update_quantity/` - Update quantity
-- `POST /api/inventory/{id}/restock/` - Restock item
+- `POST /api/inventory/{id}/restock/` - Restock items
 - `GET /api/inventory/low_stock/` - Get low stock items
 
 ### Reports
